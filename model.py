@@ -1,13 +1,36 @@
 import torch
+import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Directly load entire model object
-model = torch.load("best_mura_model.pth", map_location=device)
+# Define your model class (must match exactly how it was saved)
+class BoneNet(nn.Module):
+    def __init__(self):
+        super(BoneNet, self).__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(16, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2)
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(32*64*64, 128),
+            nn.ReLU(),
+            nn.Linear(128, 2)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
+
+# Load state dict
+model = BoneNet().to(device)
+model.load_state_dict(torch.load("best_mura_model.pth", map_location=device))
 model.eval()
 
+# Prediction function
 def predict(image_path):
     transform = transforms.Compose([
         transforms.Resize((256, 256)),
