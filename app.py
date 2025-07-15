@@ -1,3 +1,8 @@
+import os
+os.environ["XDG_CONFIG_HOME"] = "."
+os.environ["STREAMLIT_ROOT"] = "."
+
+
 import streamlit as st
 from model import predict
 
