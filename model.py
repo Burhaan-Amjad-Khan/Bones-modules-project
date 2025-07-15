@@ -25,8 +25,9 @@ class BoneNet(nn.Module):
         return x
 
 model = BoneNet().to(device)
-model.load_state_dict(torch.load("best_mura_model.pth", map_location=device))
+model = torch.load("best_mura_model.pth", map_location=device)
 model.eval()
+
 
 def predict(image_path):
     transform = transforms.Compose([
