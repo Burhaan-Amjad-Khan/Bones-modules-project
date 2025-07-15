@@ -1,3 +1,5 @@
+# model.py
+
 import torch
 import torch.nn as nn
 from torchvision import transforms
@@ -14,7 +16,7 @@ class BoneNet(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(32*64*64, 128),
+            nn.Linear(32 * 64 * 64, 128),
             nn.ReLU(),
             nn.Linear(128, 2)
         )
@@ -24,11 +26,12 @@ class BoneNet(nn.Module):
         x = self.classifier(x)
         return x
 
+# Load model
 model = BoneNet().to(device)
-model = torch.load("best_mura_model.pth", map_location=device)
+model.load_state_dict(torch.load("best_mura_model.pth", map_location=device))
 model.eval()
 
-
+# Prediction function
 def predict(image_path):
     transform = transforms.Compose([
         transforms.Resize((256, 256)),
